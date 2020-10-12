@@ -1,7 +1,11 @@
 // Yargs Package - Adding Command Options
-const yargs = require('yargs');
-const chalk = require('chalk');
-const notes = require('./notes.js');
+// const yargs = require('yargs');
+// const notes = require('./notes.js');
+
+// changing require/module.exports syntax to => import/export syntax.
+import yargs from 'yargs';
+import notes from './notes.js';
+
 
 // Customize yargs version
 // yargs.version('1.1.0');

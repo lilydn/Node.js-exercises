@@ -1,9 +1,9 @@
-const fs = require('fs');
-const chalk = require('chalk');
+// const fs = require('fs');
+// const chalk = require('chalk');
 
-const getNotes = () => {
-  return 'your notes..';
-}
+// changing require/module.exports syntax to => import/export syntax.
+import fs from 'fs';
+import chalk from 'chalk';
 
 
 // ---------------------------- //
@@ -101,8 +101,16 @@ const resetNotes = () => {
 }
 
 // exporting multiple functions/variables
-module.exports = {
-  getNotes: getNotes,
+// module.exports = {
+//   addNote: addNote,
+//   removeNote: removeNote,
+//   listNotes: listNotes,
+//   readNote: readNote,
+//   resetNotes: resetNotes,
+// }
+
+// changing require/module.exports syntax to => import/export syntax.
+export default {
   addNote: addNote,
   removeNote: removeNote,
   listNotes: listNotes,

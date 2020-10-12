@@ -1,5 +1,8 @@
-const notes = require('./notes.js');
-const { expect, beforeEach } = require('@jest/globals');
+// changing require/module.exports syntax to => import/export syntax.
+// const notes = require('./notes.js');
+// const { expect, beforeEach } = require('@jest/globals');
+import notes from './notes.js';
+import { expect, beforeEach } from 'jest';
 
 describe('notes', () => {
 
