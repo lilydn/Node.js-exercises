@@ -1,8 +1,5 @@
 const yargs = require('yargs');
 
-// node calc add --num1=1 --num2=2 
-// should be: node calc –add 1 2
-
 // add operation
 yargs.command({
     command: 'add',
