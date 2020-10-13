@@ -58,10 +58,10 @@ const getUsingHttps = (baseURL, callback) => {
 
 // ------------------------ //
 
-getUsingRequest(baseURL, (error, data) => {
+const callback = (error, data) => {
 	error ? console.log(error) : console.log(data);
-});
+}
 
-getUsingHttps(baseURL, (error, data) => {
-	error ? console.log(error) : console.log(data);
-});
+getUsingRequest(baseURL, callback);
+
+getUsingHttps(baseURL, callback);
