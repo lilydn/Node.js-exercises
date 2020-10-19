@@ -1,13 +1,14 @@
 const express = require('express');
-const { create } = require('domain');
-// const bodyParser = require('body-parser')
-const app = express();
 
-app.use(express.json()); // for parsing application/json
+const port =  process.env.PORT || 3030;
+const app = express();
+app.use(express.json()); 
+
+
 // app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+// const bodyParser = require('body-parser')
 // app.use(bodyParser.json());
 
-const port = 3030;
 
 let users = [
 	{
@@ -28,78 +29,131 @@ let products = [
 	},
 ];
 
-// app.post('/', function (req, res) {
-//   res.send('Got a POST request')
-// });
-
 // get users http://localhost:3030/users
 app.get('/users', (req, res) => {
-	console.log(req);
 	res.json(users);
 });
 
 // get a user with specific id
 app.get('/users/:id', (req, res) => {
-	userToSend = users.filter(user => user.id === req.params.id);
-	res.json(userToSend);
-});
-
-// app.get('/user', (req, res)=>{
-//   res.send('user added');
-// });
-
-// create a user with post data - with req.params
-app.post('/user/:username', (req, res) => {
-	let { username } = req.params;
-	if (username) {
-		users.push({
-			id: users[users.length - 1].id + 1,
-			username,
-		});
+	const { id } = req.params;
+	const ans = findUserById(id, res);
+	if (ans.error) {
+		return res.send(ans);
 	}
-	res.send(users);
+	const user = users[ans.index];
+	res.json(user);
 });
 
 // create a user with post data - with req.body
 app.post('/user', (req, res) => {
 	const { username } = req.body;
-  const newUser = 
-    {  
-      id: users[users.length - 1].id + 1,
-      username,
-    };
-	res.send(newUser);
+	if (!username) {
+		res.status(400);
+		return res.send({
+			error: 'username must be provided',
+			code: res.statusCode,
+		});
+	}
+	createNewUserAndPush(username);
+	res.send(users);
+});
+
+// create a user with post data - with req.params
+app.post('/user/:username', (req, res) => {
+	let { username } = req.params;
+	if (!username) {
+		res.status(400);
+		return res.send({
+			error: 'username must be providedddd',
+			code: res.statusCode,
+		});
+	}
+	createNewUserAndPush(username);
+	res.send(users);
 });
 
 // Delete a user: http://localhost:3030/user?id=1 with query string
+app.delete('/user', (req, res) => {
+	const { id } = req.query;
+	const ans = findUserById(id, res);
+	if (ans.error) {
+		return res.send(ans);
+	}
+	users.splice(ans.index, 1);
+	res.send(users);
+});
 
 // Update a user: http://localhost:3030/user?id=1 with a query string and post data
+app.put('/user', (req, res) => {
+	const { id } = req.query;
+	const ans = findUserById(id, res);
+	if (ans.error) {
+		return res.send(ans);
+	}
+	const { username } = req.body;
+	if (username) {
+		findUserAndUpdate(ans.index, username);
+	}
+	res.send(users);
+});
 
 // Get Products http://localthost:3030/products
+app.get('/products', (req, res) => {
+	res.json(products);
+});
 
 // Create a product: http://localhost:3030/product with a post data
-
-// The query string comes after ? in the URL
-// http://localhost:3001/products?search=game&rating=5
-app.get('/products', (req, res) => {
-	console.log(req.query); // access the additional values passed along with express
-	if (!req.query.search) {
-		// if no search term is given
+app.post('/products', (req, res) => {
+	const { title, price } = req.body;
+	if (!title || !price) {
+		res.status(400);
 		return res.send({
-			// error that comes very often - we cant do 2 res.send - we cant request twice
-			error: 'You must provide a search term', // by using return, exits and not doing twice res.send
+			error: 'title and price must be provided',
+			code: res.statusCode,
 		});
 	}
-	res.send({
-		products: [],
-	});
+	createNewProductAndPush(title, price);
+	res.json(products);
 });
 
 
+// utility functions
 
-createNew
+createNewUserAndPush = username => {
+	const newUser = {
+		id: users[users.length - 1].id + 1,
+		username,
+	};
+	users.push(newUser);
+};
 
+findUserById = (id, res) => {
+	const index = users.findIndex(user => user.id === parseInt(id));
+	if (!id || index === -1) {
+		res.status(400);
+		return {
+			error: 'user not found',
+			code: res.statusCode,
+		};
+	}
+	return { index: index };
+};
 
+findUserAndUpdate = (index, updateValue) => {
+	if (users[index] && updateValue) {
+		users[index].username = updateValue;
+	}
+};
+
+createNewProductAndPush = (title, price) => {
+	const newProduct = {
+		id: products[products.length - 1].id + 1,
+		title,
+		price,
+	};
+	products.push(newProduct);
+};
 
 app.listen(port, () => {
 	console.log('Server is up on port ' + port);
